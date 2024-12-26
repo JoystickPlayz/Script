@@ -1,0 +1,153 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local AutoshootEnabled = false
+
+local function toggleAutoshoot()
+    AutoshootEnabled = not AutoshootEnabled
+end
+
+local function autoshoot()
+    while AutoshootEnabled do
+        local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+        if tool then
+            tool:Activate()
+        end
+        RunService.Heartbeat:Wait()
+    end
+end
+
+RunService.Heartbeat:Connect(function()
+    if AutoshootEnabled then
+        autoshoot()
+    end
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    AutoshootEnabled = false
+    TextButton.Text = "Autoshoot OFF"
+end)
+
+local Primerune = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local Logo = Instance.new("ImageLabel")
+local TextButton = Instance.new("TextButton")
+local UICorner_2 = Instance.new("UICorner")
+
+Primerune.Name = "Primerune"
+Primerune.Parent = game.CoreGui
+Primerune.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = Primerune
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderSizePixel = 0
+Frame.Position = UDim2.new(0.133798108, 0, 0.20107238, 0)
+Frame.Size = UDim2.new(0, 202, 0, 70)
+Frame.Active = true
+Frame.Draggable = true
+
+local function TopContainer()
+    Frame.Position = UDim2.new(0.5, -Frame.AbsoluteSize.X / 2, 0, -Frame.AbsoluteSize.Y / 2)
+end
+
+TopContainer()
+Frame:GetPropertyChangedSignal("AbsoluteSize"):Connect(TopContainer)
+
+UICorner.Parent = Frame
+
+Logo.Name = "Logo"
+Logo.Parent = Frame
+Logo.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+Logo.BackgroundTransparency = 3.000
+Logo.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Logo.BorderSizePixel = 0
+Logo.Position = UDim2.new(0.326732665, 0, 0, 0)
+Logo.Size = UDim2.new(0, 70, 0, 70)
+Logo.Image = "rbxassetid://830610397"
+Logo.ImageTransparency = 0.300
+
+TextButton.Parent = Frame
+TextButton.BackgroundColor3 = Color3.fromRGB(75, 80, 255)
+TextButton.BackgroundTransparency = 5.000
+TextButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton.BorderSizePixel = 0
+TextButton.Position = UDim2.new(0.0792079195, 0, 0.18571429, 0)
+TextButton.Size = UDim2.new(0, 170, 0, 44)
+TextButton.Font = Enum.Font.SourceSansSemibold
+TextButton.Text = "Autoshoot OFF"
+TextButton.TextColor3 = Color3.fromRGB(180, 180, 255)
+TextButton.TextScaled = true
+TextButton.TextSize = 18.000
+TextButton.TextWrapped = true
+
+local state = false
+TextButton.MouseButton1Click:Connect(
+    function()
+        state = not state
+        if state then
+            TextButton.Text = "Autoshoot ON"
+            toggleAutoshoot()
+        else
+            TextButton.Text = "Autoshoot OFF"
+            toggleAutoshoot()
+        end
+    end
+)
+--note script for credits
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.CoreGui
+
+-- Note Label
+local noteLabel = Instance.new("TextLabel")
+noteLabel.Size = UDim2.new(0, 100, 0, 20)
+noteLabel.Position = UDim2.new(1, -200, 0, 25) -- Upper right corner
+noteLabel.BackgroundTransparency = 1
+noteLabel.TextColor3 = Color3.new(1, 1, 1)
+noteLabel.Font = Enum.Font.Arcade
+noteLabel.TextScaled = true
+noteLabel.Text = "autoshoot by rune @primerune"
+noteLabel.Parent = screenGui
+
+-- Function to convert hue to RGB
+local function hsvToRgb(h, s, v)
+    local r, g, b
+    local i = math.floor(h * 6)
+    local f = h * 6 - i
+    local p = v * (1 - s)
+    local q = v * (1 - f * s)
+    local t = v * (1 - (1 - f) * s)
+    i = i % 6
+
+    if i == 0 then
+        r, g, b = v, t, p
+    elseif i == 1 then
+        r, g, b = q, v, p
+    elseif i == 2 then
+        r, g, b = p, v, t
+    elseif i == 3 then
+        r, g, b = p, q, v
+    elseif i == 4 then
+        r, g, b = t, p, v
+    elseif i == 5 then
+        r, g, b = v, p, q
+    end
+
+    return Color3.new(r, g, b)
+end
+
+local hue = 0 -- Initial hue value
+local hueSpeed = 0.5 -- Speed of hue change
+
+game:GetService("RunService").RenderStepped:Connect(function(deltaTime)
+    -- Update hue value
+    hue = hue + hueSpeed * deltaTime
+    if hue > 1 then
+        hue = hue - 1
+    end
+
+    -- Convert hue to RGB and apply to the note label
+    local color = hsvToRgb(hue, 1, 1)
+    noteLabel.TextColor3 = color
+end)
